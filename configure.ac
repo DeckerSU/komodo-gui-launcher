@@ -11,7 +11,8 @@ AC_PROG_INSTALL
 CXXFLAGS="$CXXFLAGS -fPIC"
 
 # Check for Qt5
-PKG_CHECK_MODULES([QT5], [Qt5Widgets Qt5Network])
+# PKG_CHECK_MODULES([QT5], [Qt5Widgets Qt5Network])
+PKG_CONFIG_PATH="$PKG_CONFIG_PATH" PKG_CHECK_MODULES([QT5], [Qt5Widgets Qt5Network])
 
 # Set C++ standard
 AC_LANG([C++])

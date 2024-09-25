@@ -15,4 +15,6 @@ install-sh
 missing
 Makefile
 moc_MainWindow.cpp
+qt-everywhere-src-*
+qt-everywhere-opensource-src-*
 
