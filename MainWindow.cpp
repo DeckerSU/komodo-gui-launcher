@@ -19,8 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       launchButton(new QPushButton("Launch", this)),
       networkManager(new QNetworkAccessManager(this))
 {
-    // setMinimumWidth(800);
-    setMinimumHeight(350);
+    // setMinimumHeight(350);
     setupUI();
     downloadAssetChains();
 
@@ -77,7 +76,7 @@ void MainWindow::setupUI() {
 
     setCentralWidget(centralWidget);
     setWindowTitle("Komodo Launcher");
-    // resize(800, 350);
+    resize(400, 150);
 }
 
 void MainWindow::downloadAssetChains() {
