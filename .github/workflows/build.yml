@@ -33,11 +33,15 @@ jobs:
           cd ..
 
           # Create an AppDir for bundling
-          mkdir AppDir
-          cp build/LauncherApp AppDir/
+          mkdir -p AppDir/usr/bin
+          cp build/LauncherApp AppDir/usr/bin/
 
-          # Use extracted linuxdeployqt to bundle dependencies without creating an AppImage
-          linuxdeployqt/AppRun AppDir/LauncherApp -bundle-non-qt-libs
+          # Use extracted linuxdeployqt to bundle dependencies
+          linuxdeployqt/AppRun AppDir/usr/bin/LauncherApp -verbose=2
+
+          # Verify OpenSSL libraries are included
+          echo "Contents of AppDir/usr/lib:"
+          ls -l AppDir/usr/lib/
 
           # Compress the AppDir into a tar.gz archive
           tar czf LauncherApp-linux.tar.gz AppDir/
@@ -47,6 +51,7 @@ jobs:
         with:
           name: KomodoLauncher-linux
           path: LauncherApp-linux.tar.gz
+
 
   build-windows:
     runs-on: windows-latest
