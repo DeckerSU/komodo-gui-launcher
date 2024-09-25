@@ -44,22 +44,37 @@ jobs:
       - name: Build
         shell: cmd
         env:
-          QT_DIR: C:\Qt\5.15.2\msvc2019_64
+          QT_DIR: C:\Qt\Qt\5.15.2\msvc2019_64
         run: |
           REM Find Visual Studio installation path
-          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VS_PATH=%%i
+          for /f "tokens=*" %%i in ('"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath') do (
+            set "VS_PATH=%%i"
+          )
+          echo VS_PATH=%VS_PATH%
+          if not defined VS_PATH (
+            echo Error: Visual Studio path not found.
+            exit /b 1
+          )
 
           REM Set up MSVC environment
           call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat"
+          echo MSVC Environment set
+
+          REM Verify the Qt directory
+          echo Listing contents of %QT_DIR%\bin
+          dir "%QT_DIR%\bin"
 
           REM Build the project
           mkdir build
           cd build
           "%QT_DIR%\bin\qmake.exe" ..\LauncherApp.pro
+          if errorlevel 1 (
+            echo qmake failed with exit code %errorlevel%
+            exit /b %errorlevel%
+          )
+          dir
           nmake
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: KomodoLauncher-windows
-          path: build\release\LauncherApp.exe
+          if errorlevel 1 (
+            echo nmake failed with exit code %errorlevel%
+            exit /b %errorlevel%
+          )
