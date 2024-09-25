@@ -32,6 +32,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Download OpenSSL DLLs
+        shell: cmd
+        run: |
+          curl -L -o openssl.exe https://slproweb.com/download/Win64OpenSSL_Light-1_1_1w.exe
+          openssl.exe /silent /dir=C:\OpenSSL-Win64
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -88,6 +94,11 @@ jobs:
           if exist build\release\platforms (
             xcopy build\release\platforms bundle\platforms\ /E /Y
           )
+
+          REM Copy OpenSSL DLLs to the bundle directory
+          set OPENSSL_DIR=C:\OpenSSL-Win64\bin
+          xcopy "%OPENSSL_DIR%\libcrypto-1_1-x64.dll" bundle\ /Y
+          xcopy "%OPENSSL_DIR%\libssl-1_1-x64.dll" bundle\ /Y
 
           REM Create a ZIP archive
           powershell Compress-Archive -Path bundle\* -DestinationPath LauncherApp-windows.zip
