@@ -12,7 +12,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qt5-default qtbase5-dev qtbase5-dev-tools qt5-qmake build-essential
+          sudo apt-get install -y qtbase5-dev qtbase5-dev-tools qt5-qmake build-essential
 
       - name: Build
         run: |
