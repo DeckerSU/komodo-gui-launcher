@@ -89,7 +89,11 @@ void MainWindow::onDownloadFinished(QNetworkReply* reply) {
         QByteArray data = reply->readAll();
         parseAssetChains(data);
     } else {
-        QMessageBox::critical(this, "Error", "Failed to download assetchains.json");
+        // Get the error string
+        QString errorString = reply->errorString();
+
+        // Display the actual error message
+        QMessageBox::critical(this, "Error", QString("Failed to download assetchains.json:\n%1").arg(errorString));
     }
     reply->deleteLater();
 }
