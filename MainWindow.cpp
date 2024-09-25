@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QDebug>
 #include <QMessageBox>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -99,12 +100,22 @@ void MainWindow::onLaunchButtonClicked() {
         return;
     }
 
-    // Determine the executable
+    // Determine the executable based on the platform
+#ifdef Q_OS_WIN
+    QString execExtension = ".exe";
+#else
+    QString execExtension = "";
+#endif
+
+    QString baseExecutable;
     if (komododRadio->isChecked()) {
-        selectedExecutable = "komodod";
+        baseExecutable = "komodod";
     } else {
-        selectedExecutable = "komodo-qt";
+        baseExecutable = "komodo-qt";
     }
+
+    // Append the extension if necessary
+    selectedExecutable = baseExecutable + execExtension;
 
     // Build the arguments
     QStringList args;
@@ -123,17 +134,29 @@ void MainWindow::onLaunchButtonClicked() {
         }
     }
 
-    // Debug output
-    qDebug() << "Launching" << selectedExecutable << "with arguments:" << args;
-
-    // Start the process
+    // Prepare to launch the executable
     QProcess *process = new QProcess(this);
+
+    // Attempt to start the process
     process->start(selectedExecutable, args);
 
+    // If the process fails to start, try launching from the current directory
     if (!process->waitForStarted()) {
-        QMessageBox::critical(this, "Error", "Failed to start the executable.");
-        delete process;
-    } else {
-        QMessageBox::information(this, "Success", "Process started successfully.");
+        // Construct the path to the executable in the current working directory
+        QString currentDirExecutable = QDir::current().absoluteFilePath(selectedExecutable);
+
+        // Update the process and try again
+        process->start(currentDirExecutable, args);
+
+        if (!process->waitForStarted()) {
+            QMessageBox::critical(this, "Error",
+                                  QString("Failed to start %1. Please ensure it is installed or located in the current directory.")
+                                      .arg(selectedExecutable));
+            delete process;
+            return;
+        }
     }
+
+    // Inform the user that the process has started
+    QMessageBox::information(this, "Success", QString("%1 started successfully.").arg(selectedExecutable));
 }
