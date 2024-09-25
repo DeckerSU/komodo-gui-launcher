@@ -62,7 +62,7 @@ jobs:
 
           REM Verify the Qt directory
           echo Listing contents of %QT_DIR%\bin
-          dir "%QT_DIR%\bin"
+          REM dir "%QT_DIR%\bin"
 
           REM Build the project
           mkdir build
@@ -72,9 +72,15 @@ jobs:
             echo qmake failed with exit code %errorlevel%
             exit /b %errorlevel%
           )
-          dir
+          REM dir
           nmake
           if errorlevel 1 (
             echo nmake failed with exit code %errorlevel%
             exit /b %errorlevel%
           )
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: KomodoLauncher-windows
+          path: build\release\LauncherApp.exe
