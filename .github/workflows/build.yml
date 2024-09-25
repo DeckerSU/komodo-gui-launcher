@@ -12,20 +12,41 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtbase5-dev qtbase5-dev-tools qt5-qmake build-essential
+          sudo apt-get install -y qtbase5-dev qtbase5-dev-tools qt5-qmake build-essential wget patchelf
 
-      - name: Build
+      - name: Download and Extract linuxdeployqt
         run: |
+          wget -c https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+          chmod +x linuxdeployqt-continuous-x86_64.AppImage
+          # Extract the AppImage
+          ./linuxdeployqt-continuous-x86_64.AppImage --appimage-extract
+          # The extracted files are in a directory named 'squashfs-root'
+          mv squashfs-root linuxdeployqt
+
+      - name: Build and Bundle Application
+        run: |
+          # Build the application
           mkdir build
           cd build
           qmake ../LauncherApp.pro
           make
+          cd ..
+
+          # Create an AppDir for bundling
+          mkdir AppDir
+          cp build/LauncherApp AppDir/
+
+          # Use extracted linuxdeployqt to bundle dependencies without creating an AppImage
+          linuxdeployqt/AppRun AppDir/LauncherApp -bundle-non-qt-libs
+
+          # Compress the AppDir into a tar.gz archive
+          tar czf LauncherApp-linux.tar.gz AppDir/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: KomodoLauncher-linux
-          path: build/LauncherApp
+          path: LauncherApp-linux.tar.gz
 
   build-windows:
     runs-on: windows-latest
