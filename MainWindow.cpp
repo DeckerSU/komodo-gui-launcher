@@ -30,7 +30,7 @@ void MainWindow::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
     // Radio Buttons for Executable Choice
-    QGroupBox *execGroup = new QGroupBox("Select Executable", this);
+    QGroupBox *execGroup = new QGroupBox("Select Executable:", this);
     QHBoxLayout *execLayout = new QHBoxLayout(execGroup);
     execLayout->addWidget(komododRadio);
     execLayout->addWidget(komodoQtRadio);
