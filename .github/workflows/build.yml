@@ -41,7 +41,7 @@ jobs:
           arch: 'win64_msvc2019_64'
           dir: 'C:\\Qt'
 
-      - name: Build
+      - name: Build and Bundle Application
         shell: cmd
         env:
           QT_DIR: C:\Qt\Qt\5.15.2\msvc2019_64
@@ -60,10 +60,6 @@ jobs:
           call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat"
           echo MSVC Environment set
 
-          REM Verify the Qt directory
-          echo Listing contents of %QT_DIR%\bin
-          REM dir "%QT_DIR%\bin"
-
           REM Build the project
           mkdir build
           cd build
@@ -72,15 +68,32 @@ jobs:
             echo qmake failed with exit code %errorlevel%
             exit /b %errorlevel%
           )
-          REM dir
           nmake
           if errorlevel 1 (
             echo nmake failed with exit code %errorlevel%
             exit /b %errorlevel%
           )
+          cd ..
+
+          REM Bundle the application with windeployqt
+          set PATH=%QT_DIR%\bin;%PATH%
+          "%QT_DIR%\bin\windeployqt.exe" --verbose 0 --compiler-runtime build\release\LauncherApp.exe
+
+          REM Copy the executable and DLLs to a 'bundle' directory
+          mkdir bundle
+          xcopy build\release\LauncherApp.exe bundle\ /Y
+          xcopy build\release\*.dll bundle\ /Y
+
+          REM Optionally, include additional Qt plugins if needed (e.g., platforms)
+          if exist build\release\platforms (
+            xcopy build\release\platforms bundle\platforms\ /E /Y
+          )
+
+          REM Create a ZIP archive
+          powershell Compress-Archive -Path bundle\* -DestinationPath LauncherApp-windows.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: KomodoLauncher-windows
-          path: build\release\LauncherApp.exe
+          path: LauncherApp-windows.zip
