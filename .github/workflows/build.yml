@@ -46,6 +46,13 @@ jobs:
         env:
           QT_DIR: C:\Qt\5.15.2\msvc2019_64
         run: |
+          REM Find Visual Studio installation path
+          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VS_PATH=%%i
+
+          REM Set up MSVC environment
+          call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat"
+
+          REM Build the project
           mkdir build
           cd build
           "%QT_DIR%\bin\qmake.exe" ..\LauncherApp.pro
