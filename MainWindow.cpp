@@ -41,14 +41,22 @@ void MainWindow::setupUI() {
     chainLayout->addWidget(new QLabel("Select Assetchain:", this));
     chainLayout->addWidget(chainComboBox);
 
+    // Additional parameters layout
+    QHBoxLayout *additionalParamsLayout = new QHBoxLayout();
+    additionalParamsLineEdit = new QLineEdit(this);
+    additionalParamsLineEdit->setPlaceholderText("-param1=value1 -param2=value2");
+    additionalParamsLayout->addWidget(new QLabel("Additional Parameters:", this));
+    additionalParamsLayout->addWidget(additionalParamsLineEdit);
+
     // Add to Main Layout
     mainLayout->addWidget(execGroup);
     mainLayout->addLayout(chainLayout);
+    mainLayout->addLayout(additionalParamsLayout);
     mainLayout->addWidget(launchButton);
 
     setCentralWidget(centralWidget);
     setWindowTitle("Komodo Launcher");
-    resize(400, 150);
+    resize(800, 180);
 }
 
 void MainWindow::downloadAssetChains() {
@@ -133,6 +141,18 @@ void MainWindow::onLaunchButtonClicked() {
             args << QString("-%1=%2").arg(key).arg(value.toString());
         }
     }
+
+     // Parse additional parameters entered by the user
+    QString additionalParamsText = additionalParamsLineEdit->text().trimmed();
+    if (!additionalParamsText.isEmpty()) {
+        // Split the additional parameters by spaces
+        QRegularExpression regex("\\s+");
+        QStringList additionalParams = additionalParamsText.split(regex);
+        args << additionalParams;
+    }
+
+    // Debug output
+    qDebug() << "Launching" << selectedExecutable << "with arguments:" << args;
 
     // Prepare to launch the executable
     QProcess *process = new QProcess(this);

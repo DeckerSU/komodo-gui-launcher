@@ -10,6 +10,7 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QProcess>
+#include <QLineEdit>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -27,6 +28,7 @@ private:
     void parseAssetChains(const QByteArray& data);
     void setupUI();
 
+    QLineEdit *additionalParamsLineEdit;
     QComboBox *chainComboBox;
     QRadioButton *komododRadio;
     QRadioButton *komodoQtRadio;

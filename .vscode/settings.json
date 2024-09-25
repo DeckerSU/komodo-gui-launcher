@@ -16,6 +16,7 @@
         "__split_buffer": "cpp",
         "__tree": "cpp",
         "iterator": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "qvboxlayout": "cpp"
     }
 }
