@@ -1,5 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 
+# Ensure the moc command is available
+MOC = $(QT5_MOC)
+
 # Define the name of the binary program
 bin_PROGRAMS = komodo-gui-launcher
 
@@ -16,5 +19,3 @@ moc_MainWindow.cpp: MainWindow.h
 AM_CPPFLAGS = $(QT5_CFLAGS)
 komodo_gui_launcher_LDADD = $(QT5_LIBS)
 
-# Ensure the moc command is available
-MOC = $(QT5_MOC)
