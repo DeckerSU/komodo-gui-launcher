@@ -11,6 +11,8 @@
 #include <QJsonDocument>
 #include <QProcess>
 #include <QLineEdit>
+#include <QMenuBar>
+#include <QAction>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,6 +25,8 @@ private slots:
     void downloadAssetChains();
     void onDownloadFinished(QNetworkReply* reply);
     void onLaunchButtonClicked();
+    void openDonatePage();
+    void showAboutDialog();
 
 private:
     void parseAssetChains(const QByteArray& data);

@@ -17,6 +17,7 @@
         "__tree": "cpp",
         "iterator": "cpp",
         "map": "cpp",
-        "qvboxlayout": "cpp"
+        "qvboxlayout": "cpp",
+        "qmessagebox": "cpp"
     }
 }

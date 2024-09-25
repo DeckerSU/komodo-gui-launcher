@@ -7,6 +7,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QDir>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -28,6 +31,22 @@ MainWindow::~MainWindow() {}
 void MainWindow::setupUI() {
     QWidget *centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+
+    // Create menu bar
+    QMenuBar *menuBar = new QMenuBar(this);
+    QMenu *menu = menuBar->addMenu("Options");
+
+    QAction *donateAction = new QAction("Donate", this);
+    QAction *aboutAction = new QAction("About", this);
+
+    menu->addAction(donateAction);
+    menu->addAction(aboutAction);
+
+    setMenuBar(menuBar);
+
+    // Connect actions to slots
+    connect(donateAction, &QAction::triggered, this, &MainWindow::openDonatePage);
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
 
     // Radio Buttons for Executable Choice
     QGroupBox *execGroup = new QGroupBox("Select Executable:", this);
@@ -179,4 +198,13 @@ void MainWindow::onLaunchButtonClicked() {
 
     // Inform the user that the process has started
     QMessageBox::information(this, "Success", QString("%1 started successfully.").arg(selectedExecutable));
+}
+
+void MainWindow::openDonatePage() {
+    QDesktopServices::openUrl(QUrl("https://getalby.com/p/decker"));
+}
+
+void MainWindow::showAboutDialog() {
+    QMessageBox::about(this, "About Komodo Launcher",
+                       "Komodo Launcher\nVersion 1.0\n\nA simple launcher for Komodo assetchains.");
 }
