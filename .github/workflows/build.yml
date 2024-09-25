@@ -1,0 +1,58 @@
+name: Build Komodo Launcher
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qt5-default qtbase5-dev qtbase5-dev-tools qt5-qmake build-essential
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          qmake ../LauncherApp.pro
+          make
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: KomodoLauncher-linux
+          path: build/LauncherApp
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.15.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          dir: 'C:\\Qt'
+
+      - name: Build
+        shell: cmd
+        env:
+          QT_DIR: C:\Qt\5.15.2\msvc2019_64
+        run: |
+          mkdir build
+          cd build
+          "%QT_DIR%\bin\qmake.exe" ..\LauncherApp.pro
+          nmake
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: KomodoLauncher-windows
+          path: build\release\LauncherApp.exe
